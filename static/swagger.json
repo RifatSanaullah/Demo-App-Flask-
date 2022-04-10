@@ -1,0 +1,76 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "description": "sean",
+      "version": "1.0.0",
+      "title": "Seans-Python3-Flask-Rest-Boilerplate",
+      "contact": {
+        "email": "seanwasere@gmail.com"
+      },
+      "license": {
+        "name": "MIT",
+        "url": "https://opensource.org/licenses/MIT"
+      }
+    },
+    "servers": [
+        {
+          "url": "/"
+        }
+      ],
+      "tags": [
+        {
+          "name": "AUthentication Request",
+          "description": "API for Login and Signup Authentication Request"
+        }
+      ],
+      "paths": {
+        "/": {
+          "get": {
+            "tags": [
+              "Login"
+            ],
+            "summary": "Login Authentication",
+            "responses": {
+              "200": {
+                "description": "OK",
+                "schema": {
+                  "$ref": "http://127.0.0.1:5000/login"
+                }
+              }
+            }
+          },
+          "post": {
+            "tags": [
+              "Login Post"
+            ],
+            "summary": "Login Post Authentication",
+            "requestBody": {
+              "email": "rifatsanaullah420@gmail.com",
+              "password": "12345",
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "http://127.0.0.1:5000/login"
+                  }
+                }
+              }
+            },
+            "produces": [
+              "application/json"
+            ],
+            "responses": {
+              "201": {
+                "description": "OK",
+                "schema": {
+                  "$ref": "http://127.0.0.1:5000/login"
+                }
+              },
+              "400": {
+                "description": "Failed. Bad post data."
+              }
+            }
+          }
+        }
+    }
+  }

@@ -3,8 +3,6 @@ from flask import Flask, Blueprint, request, flash, url_for, redirect, render_te
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, LoginManager, login_user
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, jsonify
-from flask_swagger import swagger
 from flask_swagger_ui import get_swaggerui_blueprint
 
 app = Flask(__name__)
@@ -28,8 +26,6 @@ SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
 )
 app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
 ### end swagger specific ###
-
-
 
 @login_manager.user_loader
 def load_user(user_id):

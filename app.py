@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_swagger_ui import get_swaggerui_blueprint
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///students.sqlite3'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///students'
 app.config['SECRET_KEY'] = "random string"
 db = SQLAlchemy(app)
 

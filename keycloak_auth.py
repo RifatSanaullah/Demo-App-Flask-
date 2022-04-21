@@ -1,13 +1,21 @@
 import json
 import logging
 
-from flask import Flask, g
+from flask import Flask, g, render_template
 from flask_oidc import OpenIDConnect
 import requests
+import sqlite3
+from flask_sqlalchemy import SQLAlchemy
 
 logging.basicConfig(level=logging.DEBUG)
 
+sqliteconnection = sqlite3.connect('meetup.sqlite3')
+
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///meetup.sqlite3'
+app.config['SECRET_KEY'] = "random string"
+db = SQLAlchemy(app)
+
 app.config.update({
     'SECRET_KEY': 'SomethingNotEntirelySecret',
     'TESTING': True,
@@ -21,8 +29,12 @@ app.config.update({
     'OIDC_INTROSPECTION_AUTH_METHOD': 'client_secret_post'
 })
 
-oidc = OpenIDConnect(app)
+class meetups(db.Model):
+   id = db.Column('meeting_id', db.Integer, primary_key=True)
+   title = db.Column(db.String(100))
+   description = db.Column(db.String(100))
 
+oidc = OpenIDConnect(app)
 
 @app.route('/')
 def hello_world():
@@ -59,8 +71,7 @@ def hello_me():
             print ("Could not access greeting-service")
             greeting = "Hello %s" % username
     
-
-    return (email, user_id)
+    return render_template('index.html', meetups = meetups.query.all())
 
 
 @app.route('/api', methods=['POST'])

@@ -1,0 +1,12 @@
+* {background-color: aqua;}
+h3 {font-size: 30px; color: black; font-family: Arial, Helvetica, sans-serif;}
+.field {border-radius: 1em; padding: 3px 0 3px;}
+input.input.is-large {
+    width: 300px;
+    height: 40px;
+}
+button.button.is-block.is-info.is-large.is-fullwidth {
+    width: 80px;
+    height: 35px;
+    margin-top: 3px;
+}

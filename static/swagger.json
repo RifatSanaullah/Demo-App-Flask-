@@ -19,55 +19,48 @@
       ],
       "tags": [
         {
-          "name": "AUthentication Request",
-          "description": "API for Login and Signup Authentication Request"
+          "name": "Api Endpoints",
+          "description": "API for testing Endpoints"
         }
       ],
       "paths": {
-        "/": {
+        "/meetup_all": {
           "get": {
             "tags": [
-              "Login"
+              "Meetup_all"
             ],
-            "summary": "Login Authentication",
+            "summary": "Show All Meetups",
             "responses": {
               "200": {
                 "description": "OK",
                 "schema": {
-                  "$ref": "http://127.0.0.1:5000/login"
+                  "$ref": "http://127.0.0.1:5000/meetup_all"
                 }
               }
             }
-          },
-          "post": {
+          }
+        },
+
+        "/meetup_all/{id}": {
+          "get": {
             "tags": [
-              "Login Post"
+              "find meetup"
             ],
-            "summary": "Login Post Authentication",
-            "requestBody": {
-              "email": "rifatsanaullah420@gmail.com",
-              "password": "12345",
-              "required": true,
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "http://127.0.0.1:5000/login"
-                  }
-                }
+            "parameters": [
+              {
+                "in": "path",
+                "name": "id",
+                "required": true,
+                "type": "integer"
               }
-            },
-            "produces": [
-              "application/json"
             ],
+            "summary": "find meetup by id",
             "responses": {
-              "201": {
+              "200": {
                 "description": "OK",
                 "schema": {
-                  "$ref": "http://127.0.0.1:5000/login"
+                  "$ref": "http://127.0.0.1:5000/meetup_all"
                 }
-              },
-              "400": {
-                "description": "Failed. Bad post data."
               }
             }
           }

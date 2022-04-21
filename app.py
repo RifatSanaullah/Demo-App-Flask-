@@ -1,12 +1,16 @@
 from sqlite3 import Cursor
 from flask import Flask, Blueprint, request, flash, url_for, redirect, render_template
+from requests import post
+from sqlalchemy import desc
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, LoginManager, login_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_swagger_ui import get_swaggerui_blueprint
+import json
+
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///students'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///meetup.sqlite3'
 app.config['SECRET_KEY'] = "random string"
 db = SQLAlchemy(app)
 
@@ -27,18 +31,11 @@ SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
 app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
 ### end swagger specific ###
 
-@login_manager.user_loader
-def load_user(user_id):
-    # since the user_id is just the primary key of our user table, use it in the query for the user
-    return User.query.get(int(user_id))
 
-
-class students(db.Model):
-   id = db.Column('student_id', db.Integer, primary_key = True)
-   name = db.Column(db.String(100))
-   city = db.Column(db.String(50))
-   addr = db.Column(db.String(200))
-   pin = db.Column(db.String(10))
+class meetups(db.Model):
+   id = db.Column('meeting_id', db.Integer, primary_key=True)
+   title = db.Column(db.String(100))
+   description = db.Column(db.String(100))
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -46,13 +43,16 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(100))
     name = db.Column(db.String(100))
 
-def __init__(self, name, city, addr,pin):
-   self.name = name
-   self.city = city
-   self.addr = addr
-   self.pin = pin
+def __init__(self, title, description):
+   self.title = title
+   self.description = description
 
-@app.route('/')
+@login_manager.user_loader
+def load_user(id):
+    # since the id is just the primary key of our user table, use it in the query for the user
+    return User.query.get(int(id))
+
+@app.route('/login')
 def login():
     return render_template('login.html')
 
@@ -71,7 +71,7 @@ def login_post():
    
     # if the above check passes, then we know the user has the right credentials
     login_user(user, remember=remember)
-    return render_template('new.html')
+    return render_template('index.html', meetups = meetups.query.all())
 
 @app.route('/signup')
 def signup():
@@ -99,23 +99,64 @@ def signup_post():
 
     return render_template('login.html')
 
-@app.route('/show_all')
-def show_all():
-   return render_template('show_all.html', students = students.query.all())
+@app.route('/')
+def index():
+    return render_template('index.html', meetups = meetups.query.all())
 
-@app.route('/new', methods = ['GET', 'POST'])
-def new():
-   if request.method == 'POST':
-      if not request.form['name'] or not request.form['city'] or not request.form['addr']:
-         flash('Please enter all the fields', 'error')
-      else:
-         student = students(name = request.form['name'], city = request.form['city'], addr = request.form['addr'], pin = request.form['pin'])
-         
-         db.session.add(student)
-         db.session.commit()
-         flash('Record was successfully added')
-         return redirect(url_for('show_all'))
-   return render_template('new.html')
+@app.route('/meetup_all')
+def meetup_all():
+    my_dict = []
+    my_dict_des = []
+    my_dict_list = {}
+    titles = [item.title for item in meetups.query.all()]
+    for title_item in titles:
+        my_dict.append(title_item)
+    my_dict_list["Title"] = my_dict
+
+    description = [item.description for item in meetups.query.all()]
+    for des_item in description:
+        my_dict_des.append(des_item)
+    my_dict_list["description"] = my_dict_des
+
+    with open("meetup_all.json", "w") as outfile:
+     json.dump(my_dict_list, outfile)
+    return my_dict_list
+
+@app.route('/meetup_all/<int:id>')
+def meetup_all_id(id):
+    item_id_list = [item.title for item in meetups.query.filter_by(id=id)]
+    des_id_list = [item.description for item in meetups.query.filter_by(id=id)]
+    for item in item_id_list:
+        print(item)
+    for desItem in des_id_list:
+        print(desItem)
+    des = "Title:"+ " " + item + ", " + "Description:" + " "+ desItem
+    return des
+
+@app.route('/add_meetups')
+def add_meetups():
+    return render_template('add_meeting.html')
+
+@app.route('/add_meetups', methods=['POST'])
+def add_meetups_post():
+    title = request.form.get('title')
+    description = request.form.get('description')
+
+    new_meeting = meetups(title = title, description = description)
+    db.session.add(new_meeting)
+    db.session.commit()
+    return render_template('index.html', meetups = meetups.query.all())
+
+@app.route('/meetup-details')
+def meetup_details():
+    titles = [item.title for item in meetups.query.all()]
+    for item in titles:
+        print(item)
+    title = item
+    description = [item.description for item in meetups.query.all()]
+    for item in description:
+        description = item
+    return render_template('meetup-details.html', title = title, description = description)
 
 if __name__ == '__main__':
    db.create_all()

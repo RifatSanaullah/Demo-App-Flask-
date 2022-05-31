@@ -78,6 +78,9 @@ def login_post():
 def signup():
     return render_template('signup.html')
 
+def test_meeting():
+    return 200
+
 @app.route('/signup', methods=['POST'])
 def signup_post():
 

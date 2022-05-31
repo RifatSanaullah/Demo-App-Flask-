@@ -124,14 +124,14 @@ def meetup_all():
 
 @app.route('/meetup_all/<int:id>')
 def meetup_all_id(id):
-    item_id_list = [item.title for item in meetups.query.filter_by(id=id)]
-    des_id_list = [item.description for item in meetups.query.filter_by(id=id)]
-    for item in item_id_list:
-        print(item)
-    for desItem in des_id_list:
-        print(desItem)
-    des = "Title:"+ " " + item + ", " + "Description:" + " "+ desItem
-    return des
+    meetup_dic = {}
+    item  = meetups.query.filter_by(id=id)
+    for list_item in item:
+        meetup_dic["Id"] = list_item.id
+        meetup_dic["Title"] = list_item.title
+        meetup_dic["Description"] = list_item.description
+    json_meetup = json.dumps(meetup_dic)
+    return json_meetup
 
 @app.route('/add_meetups')
 def add_meetups():

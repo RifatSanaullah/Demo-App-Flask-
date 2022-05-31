@@ -1,7 +1,7 @@
 from sqlite3 import Cursor
 from flask import Flask, Blueprint, request, flash, url_for, redirect, render_template
 from requests import post
-from sqlalchemy import desc
+from sqlalchemy import desc, false
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, LoginManager, login_user
 from flask_sqlalchemy import SQLAlchemy
@@ -12,6 +12,7 @@ import json
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///meetup.sqlite3'
 app.config['SECRET_KEY'] = "random string"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 login_manager = LoginManager()
